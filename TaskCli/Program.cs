@@ -9,7 +9,7 @@ UserCredential credential;
 
 // Create credentials and authorize
 // TODO: If using file for secrets we should check if it exists and exit gracefully if not with and error message
-using var stream = new FileStream("client_secrets.json", FileMode.Open, FileAccess.Read);
+using var stream = new FileStream("client_secret.json", FileMode.Open, FileAccess.Read);
 credential = GoogleWebAuthorizationBroker.AuthorizeAsync(
     GoogleClientSecrets.FromStream(stream).Secrets,
     [TasksService.Scope.Tasks],
