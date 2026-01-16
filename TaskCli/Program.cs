@@ -42,6 +42,6 @@ foreach (TaskList list in results.Items)
     Tasks tasks = tasksRequest.Execute();
     foreach (Google.Apis.Tasks.v1.Data.Task task in tasks.Items)
     {
-        Console.WriteLine("\t" + task.Title);
+        Console.WriteLine($"\t{((task.Completed is null) ? "O" : "X")} {task.Title}");
     }
 }
