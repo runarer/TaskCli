@@ -16,9 +16,7 @@ A classic cli ToDo application, but it connects to Google Tasks.
 
 ### Program
 
-- [ ] Connect to Auth
-- [ ] Get Tasklists
-- [ ] Model Tasklists
+- [x] Connect to Auth
+- [x] Get Tasklists
 - [ ] Model Tasklist
-- [ ] Model Tasks
 - [ ] Model Task
