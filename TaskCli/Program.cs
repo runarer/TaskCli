@@ -32,5 +32,16 @@ TaskLists results = taskService.Tasklists.List().Execute();
 
 foreach (TaskList list in results.Items)
 {
-    Console.WriteLine("\t\t" + list.Title);
+    Console.WriteLine(list.Title);
+    var tasksRequest = taskService.Tasks.List(list.Id);
+    // Både ShowCompleted and ShowHidden må være true, Maxresult er valgfritt.
+    tasksRequest.ShowCompleted = true;
+    tasksRequest.ShowHidden = true;
+    tasksRequest.MaxResults = 100;
+
+    Tasks tasks = tasksRequest.Execute();
+    foreach (Google.Apis.Tasks.v1.Data.Task task in tasks.Items)
+    {
+        Console.WriteLine("\t" + task.Title);
+    }
 }
