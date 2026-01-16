@@ -12,7 +12,7 @@ A classic cli ToDo application, but it connects to Google Tasks.
   - [x] Google API
   - [x] Google API Auth
   - [x] Google API Task
-- [ ] Fix Key from Google Cloud
+- [x] Fix Key from Google Cloud
 
 ### Program
 
