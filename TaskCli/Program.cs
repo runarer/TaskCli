@@ -7,13 +7,23 @@ using Spectre.Console;
 
 
 using TaskCli.Models;
+using TaskCli.Controller;
+using TaskCli.View;
+
 
 TaskCli.Models.TaskList tasklist = new()
 {
     Name = "Testlist",
-    Tasks = [new() { Title = "En task" }, new() { Title = "En annen task" }]
+    Tasks = [new() { Title = "En task" }, new() { Title = "En annen task" }, new() { Title = "En task" }, new() { Title = "En annen task" }]
 };
 
+
+ConsoleView view = new();
+TaskAppController controller = new(view, new Dictionary<string, TaskCli.Models.TaskList> { ["Testlist"] = tasklist }, "Testlist");
+
+var token = new CancellationTokenSource();
+Console.CancelKeyPress += (_, e) => { e.Cancel = true; token.Cancel(); };
+await controller.RunAsync(token.Token);
 
 // UserCredential credential;
 
