@@ -27,6 +27,8 @@ public sealed class TaskAppController
                 case ConsoleKey.K:
                 case ConsoleKey.UpArrow:
                     break;
+                case ConsoleKey.S:
+                case ConsoleKey.L:
                 case ConsoleKey.DownArrow:
                     break;
                 case ConsoleKey.Enter:
