@@ -14,7 +14,7 @@ public class GoogleTaskToModel : IToDoListsStorage
     public GoogleTaskToModel(string secretsFileName)
     {
         using var stream = new FileStream(secretsFileName, FileMode.Open, FileAccess.Read);
-        var _credential = GoogleWebAuthorizationBroker.AuthorizeAsync(
+        UserCredential _credential = GoogleWebAuthorizationBroker.AuthorizeAsync(
         GoogleClientSecrets.FromStream(stream).Secrets,
         [TasksService.Scope.Tasks],
         "user",
@@ -53,10 +53,11 @@ public class GoogleTaskToModel : IToDoListsStorage
         // Get Main tasks, need to store Id and Parent so we can match them later.
         var tempItems = tasks.Items.Select(item => new
         {
-            Id = int.Parse(item.Id),
+            item.Id,
             item.Parent,
             Item = TaskToTodoItem(item)
-        });
+        }).ToList(); // Need to make it a list so it's mutable.
+
 
         // Get Subtasks and add them to right parent
         foreach (var item in tempItems)
@@ -64,17 +65,19 @@ public class GoogleTaskToModel : IToDoListsStorage
             if (item.Parent is not null)
             {
                 // Find the parent
-                var parent = tempItems.First(p => p.Id == item.Id);
+                var parent = tempItems.First(p => p.Id == item.Parent);
                 // Add item to parent
                 parent.Item.SubItems.Add(item.Item);
             }
         }
 
-        return new ToDoList()
+        var todoList = new ToDoList()
         {
             Title = listName,
             Items = [.. tempItems.Where(item => item.Parent is null).Select(item => item.Item)]
         };
+
+        return todoList;
     }
 
     private ToDoItem TaskToTodoItem(Google.Apis.Tasks.v1.Data.Task item)
