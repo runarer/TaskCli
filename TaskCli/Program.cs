@@ -1,6 +1,7 @@
 ﻿
 
 
+using TaskCli.Controller;
 using TaskCli.Model;
 
 namespace TaskCli;
@@ -9,24 +10,16 @@ public class TaskCli
 {
     public static async Task Main(string[] args)
     {
+
+        var cancellationToken = new CancellationTokenSource();
+        Console.CancelKeyPress += (_, e) => { e.Cancel = true; cancellationToken.Cancel(); };
+
         IToDoListsStorage todoStorage = new Services.GoogleTaskToModel("client_secret.json");
+        ToDoLists toDoLists = await ToDoLists.CreateAsync(todoStorage);
 
-        // Test if I get something back
+        MainController controller = new(toDoLists);
 
-        var lists = await todoStorage.GetLists();
-
-        foreach (var l in lists)
-            Console.WriteLine(l);
-
-        var list = await todoStorage.GetList(lists[1]);
-        foreach (var l in list.Items)
-        {
-            Console.WriteLine(l.Title);
-            if (l.SubItems.Count > 0)
-                foreach (var subItem in l.SubItems)
-                    Console.WriteLine($"\t{subItem.Title}");
-        }
-
+        await controller.RunAsync(cancellationToken.Token);
     }
 }
 
