@@ -10,7 +10,14 @@ public class MainController
     private ViewState _currentState = ViewState.ToDoList;
     private ViewState _previousState = ViewState.ToDoList;
 
-    public async void RunAsync(CancellationToken token)
+    private ToDoLists _model;
+
+    public MainController(ToDoLists model)
+    {
+        _model = model;
+    }
+
+    public async Task RunAsync(CancellationToken token)
     {
         bool run = true;
 
