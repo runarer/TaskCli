@@ -1,0 +1,44 @@
+using System.Text;
+using TaskCli.Model;
+
+namespace TaskCli.Controller;
+
+public class MainController
+{
+    // Need to take model and view objects.
+    private ToDoList? _currentList = null;
+    private ViewState _currentState = ViewState.ToDoList;
+
+    public async void RunAsync(CancellationToken token)
+    {
+        bool run = true;
+
+        // Render something first
+
+        while (run)
+        {
+            var keyPress = Console.ReadKey(intercept: true);
+
+            switch (keyPress.Key)
+            {
+                case ConsoleKey.Q:
+                    run = false;
+                    break;
+                case ConsoleKey.H:
+                    _currentState = ViewState.Help;
+                    break;
+                case ConsoleKey.L:
+                    _currentState = ViewState.ToDoLists;
+                    break;
+                default:
+                    //
+                    break;
+            }
+        }
+    }
+}
+
+public enum ViewState
+{
+    Help, ToDoList, ToDoLists
+}
