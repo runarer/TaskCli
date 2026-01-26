@@ -8,6 +8,7 @@ public class MainController
     // Need to take model and view objects.
     private ToDoList? _currentList = null;
     private ViewState _currentState = ViewState.ToDoList;
+    private ViewState _previousState = ViewState.ToDoList;
 
     public async void RunAsync(CancellationToken token)
     {
@@ -35,6 +36,11 @@ public class MainController
                     break;
             }
         }
+    }
+
+    public void BackToPreviousView()
+    {
+        _currentState = _previousState;
     }
 }
 
