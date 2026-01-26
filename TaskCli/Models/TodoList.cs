@@ -7,5 +7,5 @@ namespace TaskCli.Model;
 public class ToDoList
 {
     public required string Title { get; set; }
-    public List<TodoItem> Items { get; set; } = [];
+    public List<ToDoItem> Items { get; set; } = [];
 }
