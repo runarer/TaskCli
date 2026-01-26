@@ -44,16 +44,16 @@ public class ToDoLists
 
     public async Task AddList(string name)
     {
-
+        throw new NotImplementedException();
     }
 
     public async Task RemoveList(string name)
     {
-
+        throw new NotImplementedException();
     }
 
     public async Task UpdateListName(string newName)
     {
-
+        throw new NotImplementedException();
     }
 }
