@@ -42,6 +42,11 @@ public class MainController
     {
         _currentState = _previousState;
     }
+
+    public void SetCurrentList(ToDoList list)
+    {
+        _currentList = list;
+    }
 }
 
 public enum ViewState
