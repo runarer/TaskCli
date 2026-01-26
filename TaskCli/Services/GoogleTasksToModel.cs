@@ -8,7 +8,7 @@ using TaskCli.Model;
 
 namespace TaskCli.Services;
 
-public class GoogleTaskToModel
+public class GoogleTaskToModel : IToDoListsStorage
 {
     private TasksService _taskService;
     public GoogleTaskToModel(string secretsFileName)
@@ -77,9 +77,9 @@ public class GoogleTaskToModel
         };
     }
 
-    private TodoItem TaskToTodoItem(Google.Apis.Tasks.v1.Data.Task item)
+    private ToDoItem TaskToTodoItem(Google.Apis.Tasks.v1.Data.Task item)
     {
-        return new TodoItem()
+        return new ToDoItem()
         {
             Title = item.Title,
             UpdatedOn = DateTime.Parse(item.Updated),
