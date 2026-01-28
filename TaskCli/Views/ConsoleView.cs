@@ -47,7 +47,7 @@ public class ConsoleView
 
     private void SetDefaultMessage()
     {
-        ClearTable();
+        // ClearTable();
         if (_screenMode == ViewState.ToDoLists)
         {
             _table.AddRow(new Markup($"[{_options.WarningColor}]No list selected[/]"));
@@ -60,7 +60,7 @@ public class ConsoleView
 
     private void ClearTable()
     {
-        for (int i = 0; i < _table.Rows.Count; i++)
+        while (_table.Rows.Count > 0)
         {
             _table.RemoveRow(0);
         }
@@ -74,3 +74,63 @@ public class ConsoleViewOptions
     public string ListColorSelected { get; set; } = "blue";
     public string ListColorUnselected { get; set; } = "green";
 }
+
+/*
+
+        var table = new Table();
+        table.AddColumn("");
+        table.Border(TableBorder.None);
+        table.HideHeaders();
+
+        string unselectedColor = "green";
+        string selectedColor = "blue";
+
+        AnsiConsole.Live(table).Start(ctx =>
+        {
+            bool finished = false;
+
+            while (!finished)
+            {
+                while (table.Rows.Count > 0)
+                    table.RemoveRow(0);
+                for (int i = 0; i < rowContent.Count; i++)
+                {
+                    table.AddRow(new Markup($"[{((i == index) ? selectedColor : unselectedColor)}]{rowContent[i]}[/]"));
+                }
+                if (rowContent.Count < 1)
+                {
+                    table.AddRow("[Red]No content in list![/]");
+                    index = 0;
+                }
+
+                ctx.Refresh();
+                var keyPressed = Console.ReadKey(intercept: true);
+
+                switch (keyPressed.Key)
+                {
+                    case ConsoleKey.Q:
+                        finished = true;
+                        break;
+                    case ConsoleKey.UpArrow:
+                        index = Math.Max(0, index - 1);
+                        break;
+                    case ConsoleKey.DownArrow:
+                        index = Math.Min(rowContent.Count - 1, index + 1);
+                        break;
+                    case ConsoleKey.D:
+                        if (rowContent.Count < 1 || index < 0 || index >= rowContent.Count)
+                            break;
+                        index = Math.Min(rowContent.Count - 1, index + 1);
+                        rowContent.RemoveAt(index);
+                        break;
+                    case ConsoleKey.A:
+                        rowContent.Insert(index + 1, "Some new item");
+                        index++;
+                        break;
+                }
+            }
+
+
+        });
+
+*/
