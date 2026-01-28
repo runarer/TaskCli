@@ -4,7 +4,7 @@ public class ToDoListController(MainController main)
 {
 
 
-    public bool ReadKey(ConsoleKey key)
+    public bool ProcessInput(ConsoleKey key)
     {
         bool keyProcessed = false;
 
