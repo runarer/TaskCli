@@ -13,6 +13,11 @@ public class ToDoLists
 
     }
 
+    public List<string> GetListNames()
+    {
+        return [.. _lists.Keys];
+    }
+
     /// <summary>
     /// Use this to create a new object of ToDoLists
     /// </summary>
