@@ -27,7 +27,7 @@ public class MainController
         bool run = true;
 
         AnsiConsole.Live(_consoleView.GetMainTable())
-            // .AutoClear(true)
+            .AutoClear(true)
             .Start(ctx =>
         {
 
@@ -54,6 +54,7 @@ public class MainController
                         break;
                 }
             }
+
         });
     }
 
