@@ -1,5 +1,7 @@
 using System.Text;
+using Spectre.Console;
 using TaskCli.Model;
+using TaskCli.Views;
 
 namespace TaskCli.Controller;
 
@@ -10,39 +12,49 @@ public class MainController
     private ViewState _currentState = ViewState.ToDoList;
     private ViewState _previousState = ViewState.ToDoList;
 
+    private ConsoleView _consoleView;
+
     private ToDoLists _model;
 
-    public MainController(ToDoLists model)
+    public MainController(ToDoLists model, ConsoleView consoleView)
     {
         _model = model;
+        _consoleView = consoleView;
     }
 
     public async Task RunAsync(CancellationToken token)
     {
         bool run = true;
 
-        // Render something first
-
-        while (run)
+        AnsiConsole.Live(_consoleView.GetMainTable())
+            // .AutoClear(true)
+            .Start(ctx =>
         {
-            var keyPress = Console.ReadKey(intercept: true);
 
-            switch (keyPress.Key)
+            while (run)
             {
-                case ConsoleKey.Q:
-                    run = false;
-                    break;
-                case ConsoleKey.H:
-                    _currentState = ViewState.Help;
-                    break;
-                case ConsoleKey.L:
-                    _currentState = ViewState.ToDoLists;
-                    break;
-                default:
-                    //
-                    break;
+                _consoleView.Render(ctx, ["Test", "Test2", "Test3"], 0);
+                ctx.Refresh();
+
+                var keyPress = Console.ReadKey(intercept: true);
+
+                switch (keyPress.Key)
+                {
+                    case ConsoleKey.Q:
+                        run = false;
+                        break;
+                    case ConsoleKey.H:
+                        _currentState = ViewState.Help;
+                        break;
+                    case ConsoleKey.L:
+                        _currentState = ViewState.ToDoLists;
+                        break;
+                    default:
+                        //
+                        break;
+                }
             }
-        }
+        });
     }
 
     public void BackToPreviousView()
