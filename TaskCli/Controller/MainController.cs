@@ -27,7 +27,6 @@ public class MainController
         int selectedItem = 1;
         Panels selectedPanel = Panels.Menu;
         Actions action = Actions.Quit;
-        ToDoList? currentList = null;
 
         while (runApp)
         {
@@ -112,11 +111,11 @@ public class MainController
                     runApp = false;
                     break;
                 case Actions.SelectList:
-                    currentList = await SelectList(); // TODO: null handling
+                    _currentList = await SelectList(); // TODO: null handling
                     break;
                 case Actions.AddList:
                     ToDoList newList = CreateList();
-                    currentList = newList; // TODO: null handling
+                    _currentList = newList; // TODO: null handling
                     break;
                 case Actions.RenameList:
                     ToDoList listToRename = await SelectList();
