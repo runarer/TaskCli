@@ -7,63 +7,63 @@ namespace TaskCli.Views;
 public class ConsoleView
 {
 
-    private Table _table = new Table();
-    private ViewState _screenMode = ViewState.ToDoLists;
+    public string[] MenuItems { get; } = ["Yesterday", "Today", "Tommorrow", "Select List", "Add List", "Rename List", "Delete List"];
+    public Layout Layout { get; private set; } = new Layout();
     private ConsoleViewOptions _options;
 
     public ConsoleView(ConsoleViewOptions? options = null)
     {
         _options = (options is null) ? new ConsoleViewOptions() : options;
 
-        _table.AddColumn("Main"); // Name not shown
-        _table.Border(TableBorder.None);
-        _table.HideHeaders();
+        Layout = new Layout("Root")
+            .SplitColumns(
+                new Layout("Menu").Size(16),
+                new Layout("ToDoList").Ratio(1),
+                new Layout("Info").Ratio(1));
+
+        Layout["Menu"].Update(CreateMenu(1));
+        Layout["ToDoList"].Update(new Panel("2/4 width (half)").BorderColor(Color.Green).Expand());
+        Layout["Info"].Update(new Panel("1/4 width").BorderColor(Color.Yellow).Expand());
+
     }
 
-    public void Render(LiveDisplayContext ctx, List<string> lists, int selectedList)
+    public void Render(LiveDisplayContext ctx, Panels selectedPanel, int selectedItem)
     {
-        ClearTable();
-        if (lists.Count == 0)
-        {
-            SetDefaultMessage();
-            return;
-        }
 
-        for (int i = 0; i < lists.Count; i++)
-        {
-            _table.AddRow(new Markup($"[{((i == selectedList) ? _options.ListColorSelected : _options.ListColorUnselected)}]{lists[i]}[/]"));
-        }
+        Layout["Menu"].Update(CreateMenu(selectedPanel == Panels.Menu ? selectedItem : -1));
+        Layout["ToDoList"].Update(new Panel("2/4 width (half)").BorderColor(Color.Green).Expand());
+        Layout["Info"].Update(new Panel("1/4 width").BorderColor(Color.Yellow).Expand());
     }
 
-    public Table GetMainTable() => _table;
 
-    public void RemoveRow(int index)
+    private Rows CreateMenu(int selected)
     {
-        if (index >= 0 && index < _table.Rows.Count)
-        {
-            _table.RemoveRow(index);
-        }
-    }
+        string selectedColor = "blue";
+        string unselectedColor = "green";
+        string infoColor = "gray";
+        string infoColorKey = "white";
 
-    private void SetDefaultMessage()
-    {
-        // ClearTable();
-        if (_screenMode == ViewState.ToDoLists)
-        {
-            _table.AddRow(new Markup($"[{_options.WarningColor}]No list selected[/]"));
-        }
-        else if (_screenMode == ViewState.ToDoList)
-        {
-            _table.AddRow(new Markup($"[{_options.WarningColor}]List is empty.[/]"));
-        }
-    }
+        var item = new Rows(
+            new Rule().Border(BoxBorder.None),
+            new Markup($"[{((selected == 0) ? selectedColor : unselectedColor)}]{MenuItems[0]}[/]"),
+            new Markup($"[{((selected == 1) ? selectedColor : unselectedColor)}]{MenuItems[1]}[/]"),
+            new Markup($"[{((selected == 2) ? selectedColor : unselectedColor)}]{MenuItems[2]}[/]"),
+            new Rule().Border(BoxBorder.None),
+            new Markup($"[{((selected == 3) ? selectedColor : unselectedColor)}]{MenuItems[3]}[/]"),
+            new Markup($"[{((selected == 4) ? selectedColor : unselectedColor)}]{MenuItems[4]}[/]"),
+            new Markup($"[{((selected == 5) ? selectedColor : unselectedColor)}]{MenuItems[5]}[/]"),
+            new Markup($"[{((selected == 6) ? selectedColor : unselectedColor)}]{MenuItems[6]}[/]"),
+            new Rule().Border(BoxBorder.None),
+            new Rule().Border(BoxBorder.None),
+            new Markup($"[{infoColorKey}]<Space>[/][{infoColor}] Check[/]"),
+            new Markup($"[{infoColorKey}]A[/]dd Task[{infoColor}][/]"),
+            new Markup($"[{infoColorKey}]E[/]dit Task[{infoColor}][/]"),
+            new Markup($"[{infoColorKey}]M[/]ove To List[{infoColor}][/]"),
+            new Markup($"[{infoColorKey}]D[/]elete Task[{infoColor}][/]"),
+            new Markup($"[{infoColorKey}]Q[/][{infoColor}]uit[/]")
+        );
 
-    private void ClearTable()
-    {
-        while (_table.Rows.Count > 0)
-        {
-            _table.RemoveRow(0);
-        }
+        return item;
     }
 
 }
@@ -74,63 +74,3 @@ public class ConsoleViewOptions
     public string ListColorSelected { get; set; } = "blue";
     public string ListColorUnselected { get; set; } = "green";
 }
-
-/*
-
-        var table = new Table();
-        table.AddColumn("");
-        table.Border(TableBorder.None);
-        table.HideHeaders();
-
-        string unselectedColor = "green";
-        string selectedColor = "blue";
-
-        AnsiConsole.Live(table).Start(ctx =>
-        {
-            bool finished = false;
-
-            while (!finished)
-            {
-                while (table.Rows.Count > 0)
-                    table.RemoveRow(0);
-                for (int i = 0; i < rowContent.Count; i++)
-                {
-                    table.AddRow(new Markup($"[{((i == index) ? selectedColor : unselectedColor)}]{rowContent[i]}[/]"));
-                }
-                if (rowContent.Count < 1)
-                {
-                    table.AddRow("[Red]No content in list![/]");
-                    index = 0;
-                }
-
-                ctx.Refresh();
-                var keyPressed = Console.ReadKey(intercept: true);
-
-                switch (keyPressed.Key)
-                {
-                    case ConsoleKey.Q:
-                        finished = true;
-                        break;
-                    case ConsoleKey.UpArrow:
-                        index = Math.Max(0, index - 1);
-                        break;
-                    case ConsoleKey.DownArrow:
-                        index = Math.Min(rowContent.Count - 1, index + 1);
-                        break;
-                    case ConsoleKey.D:
-                        if (rowContent.Count < 1 || index < 0 || index >= rowContent.Count)
-                            break;
-                        index = Math.Min(rowContent.Count - 1, index + 1);
-                        rowContent.RemoveAt(index);
-                        break;
-                    case ConsoleKey.A:
-                        rowContent.Insert(index + 1, "Some new item");
-                        index++;
-                        break;
-                }
-            }
-
-
-        });
-
-*/
