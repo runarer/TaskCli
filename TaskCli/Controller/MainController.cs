@@ -12,19 +12,15 @@ public class MainController
     private ConsoleView _consoleView;
     private ToDoLists _model;
 
-
+    private string[] _lists;
 
     public MainController(ToDoLists model, ConsoleView consoleView)
     {
         _model = model;
         _consoleView = consoleView;
-    }
-    public MainController(ToDoLists model)
-    {
-        _model = model;
-        _consoleView = new ConsoleView();
-    }
 
+        _lists = _model.GetListNames();
+    }
     public async Task RunAsync(CancellationToken token)
     {
         bool runApp = true;
@@ -107,24 +103,27 @@ public class MainController
                     }
                 }
             });
+
+            AnsiConsole.Clear();
+
             switch (action)
             {
                 case Actions.Quit:
                     runApp = false;
                     break;
                 case Actions.SelectList:
-                    currentList = SelectList(); // TODO: null handling
+                    currentList = await SelectList(); // TODO: null handling
                     break;
                 case Actions.AddList:
                     ToDoList newList = CreateList();
                     currentList = newList; // TODO: null handling
                     break;
                 case Actions.RenameList:
-                    ToDoList listToRename = SelectList();
+                    ToDoList listToRename = await SelectList();
                     RenameList(listToRename); // TODO: null handling
                     break;
                 case Actions.DeleteList:
-                    ToDoList listToDelete = SelectList();
+                    ToDoList listToDelete = await SelectList();
                     DeleteList(listToDelete); // TODO: null handling
                     break;
                 case Actions.AddTask:
@@ -139,14 +138,13 @@ public class MainController
                     // DeleteTask();
                     break;
                 case Actions.MoveTask:
-                    ToDoList toList = SelectList();
+                    ToDoList toList = await SelectList();
                     // MoveTask();
                     break;
                 default:
                     throw new NotSupportedException("An unknown action occured");
             }
         }
-        AnsiConsole.Clear();
     }
 
 
@@ -165,14 +163,14 @@ public class MainController
     {
         return new SelectionPrompt<string>()
             .Title(title)
-            .PageSize(15)
+            .PageSize(20)
             .AddChoices(lists);
     }
 
-    private ToDoList SelectList()
+    private async Task<ToDoList> SelectList()
     {
-
-        throw new NotImplementedException("SelectedList not implemented yet");
+        var selectedList = await AnsiConsole.PromptAsync(CreateSelectListPrompt(_lists, "Select When this should be done"));
+        return await _model.GetList(selectedList);
     }
 
     private ToDoList CreateList()

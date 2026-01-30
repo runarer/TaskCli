@@ -22,9 +22,9 @@ public class TaskCli
         IToDoListsStorage todoStorage = new Services.GoogleTaskToModel("client_secret.json");
         ToDoLists toDoLists = await ToDoLists.CreateAsync(todoStorage);
 
-        // ConsoleView consoleView = new();
+        ConsoleView consoleView = new();
 
-        MainController controller = new(toDoLists);
+        MainController controller = new(toDoLists, consoleView);
 
         await controller.RunAsync(cancellationToken.Token);
 

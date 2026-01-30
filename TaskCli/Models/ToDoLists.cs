@@ -13,7 +13,7 @@ public class ToDoLists
 
     }
 
-    public List<string> GetListNames()
+    public string[] GetListNames()
     {
         return [.. _lists.Keys];
     }
@@ -45,6 +45,11 @@ public class ToDoLists
         }
 
         return todoLists;
+    }
+
+    public async Task<ToDoList> GetList(string name)
+    {
+        return await _storage.GetList(name);
     }
 
     public async Task AddList(string name)
