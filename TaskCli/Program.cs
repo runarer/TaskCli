@@ -51,6 +51,7 @@ public class TaskCli
         int selectedItem = 1;
         Panels selectedPanel = Panels.Menu;
         Actions action = Actions.Quit;
+        ToDoList? currentList = null;
 
         while (runApp)
         {
@@ -133,6 +134,38 @@ public class TaskCli
                 case Actions.Quit:
                     runApp = false;
                     break;
+                case Actions.SelectList:
+                    currentList = SelectList(); // TODO: null handling
+                    break;
+                case Actions.AddList:
+                    ToDoList newList = CreateList();
+                    currentList = newList; // TODO: null handling
+                    break;
+                case Actions.RenameList:
+                    ToDoList listToRename = SelectList();
+                    RenameList(listToRename); // TODO: null handling
+                    break;
+                case Actions.DeleteList:
+                    ToDoList listToDelete = SelectList();
+                    DeleteList(listToDelete); // TODO: null handling
+                    break;
+                case Actions.AddTask:
+                    ToDoItem item = AddTask();
+                    //TODO: null handling
+                    //TODO: Add to current List
+                    break;
+                case Actions.EditTask:
+                    // EditTask();
+                    break;
+                case Actions.DeleteTask:
+                    // DeleteTask();
+                    break;
+                case Actions.MoveTask:
+                    ToDoList toList = SelectList();
+                    // MoveTask();
+                    break;
+                default:
+                    throw new NotSupportedException("An unknown action occured");
             }
         }
         AnsiConsole.Clear();
@@ -159,7 +192,7 @@ public class TaskCli
             new Markup($"[{infoColorKey}]<Space>[/][{infoColor}] Check[/]"),
             new Markup($"[{infoColorKey}]A[/]dd Task[{infoColor}][/]"),
             new Markup($"[{infoColorKey}]E[/]dit Task[{infoColor}][/]"),
-            new Markup($"[{infoColorKey}]M[/]ove Task[{infoColor}][/]"),
+            new Markup($"[{infoColorKey}]M[/]ove To List[{infoColor}][/]"),
             new Markup($"[{infoColorKey}]D[/]elete Task[{infoColor}][/]"),
             new Markup($"[{infoColorKey}]Q[/][{infoColor}]uit[/]")
         );
@@ -172,10 +205,46 @@ public class TaskCli
         "Add List" => Actions.AddList,
         "Rename List" => Actions.RenameList,
         "Delete List" => Actions.DeleteList,
-        _ => Actions.Quit
+        _ => throw new NotSupportedException("Unknokn menu selection")
     };
-}
 
+
+
+
+    private static ToDoList SelectList()
+    {
+        throw new NotImplementedException("SelectedList not implemented yet");
+    }
+
+    private static ToDoList CreateList()
+    {
+        throw new NotImplementedException("CreateList not implemented yet");
+    }
+
+    private static bool RenameList(ToDoList list)
+    {
+        throw new NotImplementedException("RenameList not implemented yet");
+    }
+    private static bool DeleteList(ToDoList list)
+    {
+        throw new NotImplementedException("DeleteList not implemented yet");
+    }
+
+    private static ToDoItem AddTask()
+    {
+        throw new NotImplementedException("AddTask not implemented yet");
+    }
+    private static bool EditTask(ToDoItem item)
+    {
+        throw new NotImplementedException("EditTask not implemented yet");
+    }
+
+    private static bool DeleteTask(ToDoItem item)
+    {
+        throw new NotImplementedException("DeleteTask not implemented yet");
+    }
+
+}
 
 public enum Panels
 {
