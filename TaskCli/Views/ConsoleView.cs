@@ -1,4 +1,5 @@
 using Spectre.Console;
+using Spectre.Console.Rendering;
 using TaskCli.Controller;
 using TaskCli.Model;
 
@@ -22,16 +23,21 @@ public class ConsoleView
                 new Layout("Info").Ratio(1));
 
         Layout["Menu"].Update(CreateMenu(1));
-        Layout["ToDoList"].Update(new Panel("2/4 width (half)").BorderColor(Color.Green).Expand());
-        Layout["Info"].Update(new Panel("1/4 width").BorderColor(Color.Yellow).Expand());
+        Layout["ToDoList"].Update(new Panel("Select List to Start").BorderColor(Color.Green).Expand());
+        Layout["Info"].Update(new Panel("Task Information").BorderColor(Color.Yellow).Expand());
 
     }
 
-    public void Render(LiveDisplayContext ctx, Panels selectedPanel, int selectedItem)
+    public void Render(LiveDisplayContext ctx, ToDoList? toDoList, Panels selectedPanel, int selectedItem)
     {
 
         Layout["Menu"].Update(CreateMenu(selectedPanel == Panels.Menu ? selectedItem : -1));
-        Layout["ToDoList"].Update(new Panel("2/4 width (half)").BorderColor(Color.Green).Expand());
+
+        // Create ToDolist
+
+        Layout["ToDoList"].Update(CreateToDoListPanel(toDoList, selectedPanel == Panels.ToDoList ? selectedItem : -1).BorderColor(Color.Green).Expand());
+
+        // Create Info panel
         Layout["Info"].Update(new Panel("1/4 width").BorderColor(Color.Yellow).Expand());
     }
 
@@ -65,6 +71,48 @@ public class ConsoleView
 
         return item;
     }
+
+    public Panel CreateToDoListPanel(ToDoList? list, int selectedIndex)
+    {
+        if (list is null)
+            return new Panel("Select a list to open");
+
+        // Build the list
+        var tree = new Tree(list.Title);
+
+        int index = 0;
+        foreach (var item in list.Items)
+        {
+            var node = tree.AddNode(CreateToDoItemLine(item, index == selectedIndex));
+            foreach (var child in item.SubItems)
+            {
+                index++;
+                node.AddNode(CreateToDoItemLine(child, index == selectedIndex));
+            }
+            index++;
+        }
+
+        Panel panel = new Panel(tree);
+
+        return panel;
+    }
+
+    private Markup CreateToDoItemLine(ToDoItem item, bool selected)
+    {
+        return new Markup($"[{(selected ? "blue" : "yellow")}]{item.Title}[/]");
+    }
+
+    public Actions GetMenuAction(int choice) => choice switch
+    {
+        0 => Actions.OpenListYesterday,
+        1 => Actions.OpenListToday,
+        2 => Actions.OpenListTomorrow,
+        3 => Actions.SelectList,
+        4 => Actions.AddList,
+        5 => Actions.RenameList,
+        6 => Actions.DeleteList,
+        _ => throw new NotSupportedException("Unknokn menu selection")
+    };
 
 }
 

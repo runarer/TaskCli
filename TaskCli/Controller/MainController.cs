@@ -39,7 +39,7 @@ public class MainController
                 while (runLiveDisplay)
                 {
                     // Render
-                    _consoleView.Render(ctx, selectedPanel, selectedItem);
+                    _consoleView.Render(ctx, _currentList, selectedPanel, selectedItem);
                     ctx.Refresh();
 
                     // Wait for input
@@ -49,25 +49,31 @@ public class MainController
                     switch (keyPress.Key)
                     {
                         case ConsoleKey.UpArrow:
+                            //TODO Panels.ToDoList
                             if (selectedPanel == Panels.Menu)
                                 selectedItem = Math.Max(0, selectedItem - 1);
                             break;
                         case ConsoleKey.DownArrow:
+                            //TODO Panels.ToDoList
                             if (selectedPanel == Panels.Menu)
                                 selectedItem = Math.Min(6, selectedItem + 1);
                             break;
                         case ConsoleKey.LeftArrow:
+                            //TODO remeber to min/max selectedIndex
                             if (selectedPanel == Panels.ToDoList)
                                 selectedPanel = Panels.Menu;
                             break;
                         case ConsoleKey.RightArrow:
+                            //TODO remeber to min/max selectedIndex
                             if (selectedPanel == Panels.Menu)
                                 selectedPanel = Panels.ToDoList;
                             break;
                         case ConsoleKey.Enter: //If menu then select action, if ToDoList then expand/collapse subtasks
+                            //Here i can change to a Dictionary<string,func>, or KeyValue<string,func>[], or I need to do
+                            // a lookup into layout->menuitems
                             if (selectedPanel == Panels.Menu)
                             {
-                                action = GetMenuAction(_consoleView.MenuItems[selectedItem]);
+                                action = _consoleView.GetMenuAction(selectedItem);
                                 runLiveDisplay = false;
                                 break;
                             }
@@ -77,23 +83,36 @@ public class MainController
                             }
                             break;
                         case ConsoleKey.Spacebar: //Toggle completion for task
+                            if (selectedPanel == Panels.ToDoList)
+                            {
+
+                            }
                             break;
                         case ConsoleKey.A: // Add a task
                             action = Actions.AddTask;
                             runLiveDisplay = false;
                             break;
                         case ConsoleKey.D: // Delete a task
-                            action = Actions.DeleteTask;
+                            if (selectedPanel == Panels.ToDoList)
+                            {
+                                action = Actions.DeleteTask;
+                            }
                             break;
                         case ConsoleKey.E: // Edit a task
-                            action = Actions.EditTask;
-                            runLiveDisplay = false;
+                            if (selectedPanel == Panels.ToDoList)
+                            {
+                                action = Actions.EditTask;
+                                runLiveDisplay = false;
+                            }
                             break;
                         case ConsoleKey.I: //Indent/unindent a task
                             break;
                         case ConsoleKey.M: // Move a task -> select list to move to
-                            action = Actions.MoveTask;
-                            runLiveDisplay = false;
+                            if (selectedPanel == Panels.ToDoList)
+                            {
+                                action = Actions.MoveTask;
+                                runLiveDisplay = false;
+                            }
                             break;
                         case ConsoleKey.Q:
                             action = Actions.Quit;
@@ -140,21 +159,35 @@ public class MainController
                     ToDoList toList = await SelectList();
                     // MoveTask();
                     break;
+                case Actions.OpenListYesterday:
+                    break;
+                case Actions.OpenListToday:
+                    break;
+                case Actions.OpenListTomorrow:
+                    break;
                 default:
                     throw new NotSupportedException("An unknown action occured");
             }
         }
     }
 
-
-    private Actions GetMenuAction(string choice) => choice switch
+    private int CountToDoItems()
     {
-        "Select List" => Actions.SelectList,
-        "Add List" => Actions.AddList,
-        "Rename List" => Actions.RenameList,
-        "Delete List" => Actions.DeleteList,
-        _ => throw new NotSupportedException("Unknokn menu selection")
-    };
+        if (_currentList is null)
+            return 0;
+
+        int items = 0;
+
+        foreach (var item in _currentList.Items)
+        {
+            foreach (var child in item.SubItems)
+                items++;
+            items++;
+        }
+        return items;
+    }
+
+
 
 
     //May not need to be nullable, can return string.Empty
@@ -212,5 +245,5 @@ public enum Panels
 
 public enum Actions
 {
-    Quit, AddTask, EditTask, MoveTask, DeleteTask, SelectList, AddList, RenameList, DeleteList,
+    Quit, AddTask, EditTask, MoveTask, DeleteTask, SelectList, AddList, RenameList, DeleteList, OpenListYesterday, OpenListToday, OpenListTomorrow
 }
