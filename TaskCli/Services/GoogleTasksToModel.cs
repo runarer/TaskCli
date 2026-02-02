@@ -109,8 +109,10 @@ public class GoogleTaskToModel : IToDoListsStorage
         await _taskService.Tasklists.Delete(listToDelete.Id).ExecuteAsync();
     }
 
-    public System.Threading.Tasks.Task UpdateList(string oldList, string newList)
+    public async System.Threading.Tasks.Task UpdateList(string oldList, string newList)
     {
-        throw new NotImplementedException();
+        var listToUpdate = _lists.First(list => list.Title == oldList);
+        listToUpdate.Title = newList;
+        await _taskService.Tasklists.Update(listToUpdate, listToUpdate.Id).ExecuteAsync();
     }
 }
