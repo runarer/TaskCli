@@ -11,6 +11,9 @@ namespace TaskCli.Services;
 public class GoogleTaskToModel : IToDoListsStorage
 {
     private TasksService _taskService;
+
+    // private string _listsEtag = string.Empty;
+    // private TaskLists? _taskLists = null;
     public GoogleTaskToModel(string secretsFileName)
     {
         using var stream = new FileStream(secretsFileName, FileMode.Open, FileAccess.Read);
@@ -78,6 +81,11 @@ public class GoogleTaskToModel : IToDoListsStorage
         };
 
         return todoList;
+    }
+
+    public async System.Threading.Tasks.Task AddList(ToDoList list)
+    {
+        await _taskService.Tasklists.Insert(new TaskList { Title = list.Title }).ExecuteAsync();
     }
 
     private ToDoItem TaskToTodoItem(Google.Apis.Tasks.v1.Data.Task item)

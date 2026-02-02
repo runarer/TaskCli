@@ -13,7 +13,7 @@ public class ToDoLists
 
     }
 
-    public string[] GetListNames()
+    public async Task<string[]> GetListNames()
     {
         return [.. _lists.Keys];
     }
@@ -29,12 +29,7 @@ public class ToDoLists
     {
         var todoLists = new ToDoLists(storage);
 
-        var storedLists = await storage.GetLists();
-
-        foreach (var list in storedLists)
-        {
-            todoLists._lists[list] = null;
-        }
+        await todoLists.UpdateLists();
 
         if (defaultList is not null)
         {
@@ -54,7 +49,11 @@ public class ToDoLists
 
     public async Task AddList(string name)
     {
-        throw new NotImplementedException();
+        var newList = new ToDoList { Title = name };
+
+        await _storage.AddList(newList);
+
+        await UpdateLists();
     }
 
     public async Task RemoveList(string name)
@@ -65,5 +64,16 @@ public class ToDoLists
     public async Task UpdateListName(string newName)
     {
         throw new NotImplementedException();
+    }
+
+    private async Task UpdateLists()
+    {
+        var currentList = await _storage.GetLists();
+        _lists.Clear();
+
+        foreach (var list in currentList)
+        {
+            _lists[list] = null;
+        }
     }
 }

@@ -12,14 +12,14 @@ public class MainController
     private ConsoleView _consoleView;
     private ToDoLists _model;
 
-    private string[] _lists;
+    private string[] _lists = [];
 
     public MainController(ToDoLists model, ConsoleView consoleView)
     {
         _model = model;
         _consoleView = consoleView;
 
-        _lists = _model.GetListNames();
+
     }
     public async Task RunAsync(CancellationToken token)
     {
@@ -27,6 +27,8 @@ public class MainController
         int selectedItem = 1;
         Panels selectedPanel = Panels.Menu;
         Actions action = Actions.Quit;
+
+        _lists = await _model.GetListNames();
 
         while (runApp)
         {
@@ -133,7 +135,7 @@ public class MainController
                     _currentList = await SelectList(); // TODO: null handling
                     break;
                 case Actions.AddList:
-                    ToDoList newList = CreateList();
+                    ToDoList newList = await CreateList();
                     _currentList = newList; // TODO: null handling
                     break;
                 case Actions.RenameList:
@@ -201,13 +203,20 @@ public class MainController
 
     private async Task<ToDoList> SelectList()
     {
+        _lists = await _model.GetListNames();
         var selectedList = await AnsiConsole.PromptAsync(CreateSelectListPrompt(_lists, "Select When this should be done"));
         return await _model.GetList(selectedList);
     }
 
-    private ToDoList CreateList()
+    private async Task<ToDoList> CreateList()
     {
-        throw new NotImplementedException("CreateList not implemented yet");
+        var cts = new CancellationTokenSource();
+        string listName = await new TextPrompt<string>("[yellow]List name: [/]")
+                                .ShowAsync(AnsiConsole.Console, cts.Token);
+
+        await _model.AddList(listName);
+
+        return await _model.GetList(listName);
     }
 
     private bool RenameList(ToDoList list)
