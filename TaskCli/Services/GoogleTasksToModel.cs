@@ -12,6 +12,8 @@ public class GoogleTaskToModel : IToDoListsStorage
 {
     private TasksService _taskService;
 
+    private TaskList[] _lists = [];
+
     public GoogleTaskToModel(string secretsFileName)
     {
         using var stream = new FileStream(secretsFileName, FileMode.Open, FileAccess.Read);
@@ -32,8 +34,9 @@ public class GoogleTaskToModel : IToDoListsStorage
     public async Task<string[]> GetLists()
     {
         TaskLists results = await _taskService.Tasklists.List().ExecuteAsync();
+        _lists = [.. results.Items];
 
-        return results.Items.Select(item => item.Title).ToArray();
+        return [.. _lists.Select(item => item.Title)];
     }
 
     public async Task<ToDoList> GetList(string listName)
@@ -100,9 +103,10 @@ public class GoogleTaskToModel : IToDoListsStorage
             Due = item.Due is null ? null : DateTime.Parse(item.Due),
         };
     }
-    public async System.Threading.Tasks.Task DeleteList(string list)
+    public async System.Threading.Tasks.Task DeleteList(string listName)
     {
-        await _taskService.Tasklists.Delete(list).ExecuteAsync();
+        var listToDelete = _lists.First(list => list.Title == listName);
+        await _taskService.Tasklists.Delete(listToDelete.Id).ExecuteAsync();
     }
 
     public System.Threading.Tasks.Task UpdateList(string oldList, string newList)
