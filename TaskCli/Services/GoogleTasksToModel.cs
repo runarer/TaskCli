@@ -102,4 +102,13 @@ public class GoogleTaskToModel : IToDoListsStorage
             Due = item.Due is null ? null : DateTime.Parse(item.Due),
         };
     }
+    public System.Threading.Tasks.Task RemoveList(ToDoList list)
+    {
+        throw new NotImplementedException();
+    }
+
+    public System.Threading.Tasks.Task UpdateList(ToDoList oldList, ToDoList newList)
+    {
+        throw new NotImplementedException();
+    }
 }
