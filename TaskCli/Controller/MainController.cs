@@ -140,11 +140,11 @@ public class MainController
                     break;
                 case Actions.RenameList:
                     ToDoList listToRename = await SelectList();
-                    RenameList(listToRename); // TODO: null handling
+                    await RenameList(listToRename); // TODO: null handling
                     break;
                 case Actions.DeleteList:
                     ToDoList listToDelete = await SelectList();
-                    await RemoveList(listToDelete); // TODO: null handling
+                    await DeleteList(listToDelete); // TODO: null handling
                     break;
                 case Actions.AddTask:
                     ToDoItem item = AddTask();
@@ -219,13 +219,20 @@ public class MainController
         return await _model.GetList(listName);
     }
 
-    private bool RenameList(ToDoList list)
+    private async Task RenameList(ToDoList list)
     {
-        throw new NotImplementedException("RenameList not implemented yet");
+        var cts = new CancellationTokenSource();
+        string newName = await new TextPrompt<string>("[yellow]List name: [/]")
+                                .DefaultValue(list.Title)
+                                .ShowAsync(AnsiConsole.Console, cts.Token);
+        if (newName != list.Title)
+            await _model.UpdateListName(list.Title, newName);
     }
-    private async Task<bool> RemoveList(ToDoList list)
+    private async Task<bool> DeleteList(ToDoList list)
     {
-        await _model.DeleteList(list.Title);
+
+        if (await AnsiConsole.ConfirmAsync($"You sure you want to delete {list.Title}"))
+            await _model.DeleteList(list.Title);
         return true;
     }
 
