@@ -45,8 +45,8 @@ public class ToDoLists
         await _storage.DeleteList(name);
     }
 
-    public async Task UpdateListName(string newName)
+    public async Task UpdateListName(string oldName, string newName)
     {
-        throw new NotImplementedException();
+        await _storage.UpdateList(oldName, newName);
     }
 }
