@@ -12,8 +12,6 @@ public class GoogleTaskToModel : IToDoListsStorage
 {
     private TasksService _taskService;
 
-    // private string _listsEtag = string.Empty;
-    // private TaskLists? _taskLists = null;
     public GoogleTaskToModel(string secretsFileName)
     {
         using var stream = new FileStream(secretsFileName, FileMode.Open, FileAccess.Read);
@@ -31,11 +29,11 @@ public class GoogleTaskToModel : IToDoListsStorage
         });
     }
 
-    public async Task<List<string>> GetLists()
+    public async Task<string[]> GetLists()
     {
         TaskLists results = await _taskService.Tasklists.List().ExecuteAsync();
 
-        return [.. results.Items.Select(item => item.Title)];
+        return results.Items.Select(item => item.Title).ToArray();
     }
 
     public async Task<ToDoList> GetList(string listName)
