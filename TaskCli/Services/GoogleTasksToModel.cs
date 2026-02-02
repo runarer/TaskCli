@@ -100,12 +100,12 @@ public class GoogleTaskToModel : IToDoListsStorage
             Due = item.Due is null ? null : DateTime.Parse(item.Due),
         };
     }
-    public async System.Threading.Tasks.Task RemoveList(ToDoList list)
+    public async System.Threading.Tasks.Task DeleteList(string list)
     {
-        await _taskService.Tasklists.Delete(list.Title).ExecuteAsync();
+        await _taskService.Tasklists.Delete(list).ExecuteAsync();
     }
 
-    public System.Threading.Tasks.Task UpdateList(ToDoList oldList, ToDoList newList)
+    public System.Threading.Tasks.Task UpdateList(string oldList, string newList)
     {
         throw new NotImplementedException();
     }

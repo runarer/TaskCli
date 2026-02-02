@@ -40,10 +40,9 @@ public class ToDoLists
         await _storage.AddList(newList);
     }
 
-    public async Task RemoveList(string name)
+    public async Task DeleteList(string name)
     {
-        throw new NotImplementedException();
-        // await _storage.RemoveList();
+        await _storage.DeleteList(name);
     }
 
     public async Task UpdateListName(string newName)

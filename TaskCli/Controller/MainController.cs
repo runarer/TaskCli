@@ -144,7 +144,7 @@ public class MainController
                     break;
                 case Actions.DeleteList:
                     ToDoList listToDelete = await SelectList();
-                    DeleteList(listToDelete); // TODO: null handling
+                    await RemoveList(listToDelete); // TODO: null handling
                     break;
                 case Actions.AddTask:
                     ToDoItem item = AddTask();
@@ -223,9 +223,10 @@ public class MainController
     {
         throw new NotImplementedException("RenameList not implemented yet");
     }
-    private bool DeleteList(ToDoList list)
+    private async Task<bool> RemoveList(ToDoList list)
     {
-        throw new NotImplementedException("DeleteList not implemented yet");
+        await _model.DeleteList(list.Title);
+        return true;
     }
 
     private ToDoItem AddTask()
