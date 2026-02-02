@@ -102,9 +102,9 @@ public class GoogleTaskToModel : IToDoListsStorage
             Due = item.Due is null ? null : DateTime.Parse(item.Due),
         };
     }
-    public System.Threading.Tasks.Task RemoveList(ToDoList list)
+    public async System.Threading.Tasks.Task RemoveList(ToDoList list)
     {
-        throw new NotImplementedException();
+        await _taskService.Tasklists.Delete(list.Title).ExecuteAsync();
     }
 
     public System.Threading.Tasks.Task UpdateList(ToDoList oldList, ToDoList newList)
