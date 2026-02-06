@@ -99,7 +99,7 @@ public class ConsoleView
 
     private Markup CreateToDoItemLine(ToDoItem item, bool selected)
     {
-        return new Markup($"[{(selected ? "blue" : "yellow")}]{item.Title}[/]");
+        return new Markup($"{(item.Completed ? ":check_mark_button:" : ":green_square:")} [{(selected ? "blue" : "yellow")}]{item.Title}[/]");
     }
 
     public Actions GetMenuAction(int choice) => choice switch
