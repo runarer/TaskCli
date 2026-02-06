@@ -40,6 +40,8 @@ public class MainController
 
                 while (runLiveDisplay)
                 {
+                    int numberOfTodoItemsInList = CountListItems(_currentList);
+
                     // Render
                     _consoleView.Render(ctx, _currentList, selectedPanel, selectedItem);
                     ctx.Refresh();
@@ -54,11 +56,19 @@ public class MainController
                             //TODO Panels.ToDoList
                             if (selectedPanel == Panels.Menu)
                                 selectedItem = Math.Max(0, selectedItem - 1);
+                            else if (selectedPanel == Panels.ToDoList)
+                            {
+                                selectedItem = Math.Max(0, numberOfTodoItemsInList - 1);
+                            }
                             break;
                         case ConsoleKey.DownArrow:
                             //TODO Panels.ToDoList
                             if (selectedPanel == Panels.Menu)
                                 selectedItem = Math.Min(6, selectedItem + 1);
+                            else if (selectedPanel == Panels.ToDoList)
+                            {
+                                selectedItem = Math.Min(numberOfTodoItemsInList - 1, numberOfTodoItemsInList + 1);
+                            }
                             break;
                         case ConsoleKey.LeftArrow:
                             //TODO remeber to min/max selectedIndex
@@ -231,7 +241,14 @@ public class MainController
     private async Task<bool> DeleteList(ToDoList list)
     {
 
-        if (await AnsiConsole.ConfirmAsync($"You sure you want to delete {list.Title}"))
+        if (await AnsiConsole.PromptAsync(
+            new ConfirmationPrompt($"You sure you want to delete [red]{list.Title}[/]")
+            {
+                DefaultValue = false,
+                ShowChoices = true,
+                InvalidChoiceMessage = "[red]Invalid input. Please enter 'y' or 'n'.[/]",
+            })
+        )
             await _model.DeleteList(list.Title);
         return true;
     }
@@ -252,6 +269,14 @@ public class MainController
     private bool DeleteTask(ToDoItem item)
     {
         throw new NotImplementedException("DeleteTask not implemented yet");
+    }
+
+    private static int CountListItems(ToDoList? list)
+    {
+        if (list is null)
+            return 0;
+
+        return list.Items.Sum(item => 1 + item.SubItems.Count);
     }
 }
 
