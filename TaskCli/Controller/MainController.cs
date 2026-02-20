@@ -27,7 +27,7 @@ public class MainController
     public async Task RunAsync(CancellationToken token)
     {
         bool runApp = true;
-        int selectedItem = 1;
+        int selectedIndex = 1;
         Panels selectedPanel = Panels.Menu;
         Actions action = Actions.Quit;
 
@@ -46,7 +46,7 @@ public class MainController
                     int numberOfTodoItemsInList = CountListItems(_currentList);
 
                     // Render
-                    _consoleView.Render(ctx, _currentList, selectedPanel, selectedItem, numberOfTodoItemsInList);
+                    _consoleView.Render(ctx, _currentList, selectedPanel, selectedIndex, numberOfTodoItemsInList);
                     ctx.Refresh();
 
                     // Wait for input
@@ -57,25 +57,26 @@ public class MainController
                     {
                         case ConsoleKey.UpArrow:
                             if (selectedPanel == Panels.Menu)
-                                selectedItem = Math.Max(0, selectedItem - 1);
+                                selectedIndex = Math.Max(0, selectedIndex - 1);
                             else if (selectedPanel == Panels.ToDoList)
                             {
-                                selectedItem = Math.Max(0, selectedItem - 1);
+                                selectedIndex = Math.Max(0, selectedIndex - 1);
+
                             }
                             break;
                         case ConsoleKey.DownArrow:
                             if (selectedPanel == Panels.Menu)
-                                selectedItem = Math.Min(_consoleView.MenuItems.Length - 1, selectedItem + 1);
+                                selectedIndex = Math.Min(_consoleView.MenuItems.Length - 1, selectedIndex + 1);
                             else if (selectedPanel == Panels.ToDoList)
                             {
-                                selectedItem = Math.Min(numberOfTodoItemsInList - 1, selectedItem + 1);
+                                selectedIndex = Math.Min(numberOfTodoItemsInList - 1, selectedIndex + 1);
                             }
                             break;
                         case ConsoleKey.LeftArrow:
                             if (selectedPanel == Panels.ToDoList)
                             {
                                 selectedPanel = Panels.Menu;
-                                selectedItem = Math.Min(selectedItem, _consoleView.MenuItems.Length - 1);
+                                selectedIndex = Math.Min(selectedIndex, _consoleView.MenuItems.Length - 1);
                             }
 
                             break;
@@ -83,7 +84,7 @@ public class MainController
                             if (numberOfTodoItemsInList > 0 && selectedPanel == Panels.Menu)
                             {
                                 selectedPanel = Panels.ToDoList;
-                                selectedItem = Math.Min(selectedItem, numberOfTodoItemsInList - 1);
+                                selectedIndex = Math.Min(selectedIndex, numberOfTodoItemsInList - 1);
                             }
                             break;
                         case ConsoleKey.Enter: //If menu then select action, if ToDoList then expand/collapse subtasks
@@ -91,7 +92,7 @@ public class MainController
                             // a lookup into layout->menuitems
                             if (selectedPanel == Panels.Menu)
                             {
-                                action = ConsoleView.GetMenuAction(selectedItem);
+                                action = ConsoleView.GetMenuAction(selectedIndex);
                                 runLiveDisplay = false;
                                 break;
                             }
