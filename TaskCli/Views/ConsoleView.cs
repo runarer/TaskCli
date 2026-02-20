@@ -72,37 +72,56 @@ public class ConsoleView
         return item;
     }
 
-    public Panel CreateToDoListPanel(ToDoList? list, int selectedIndex)
+    private Panel CreateToDoListPanel(ToDoList? list, int selectedIndex)
     {
-        if (list is null)
+        int totalDisplayItems = MainController.CountListItems(list);
+
+        if (totalDisplayItems == 0)
             return new Panel("Select a list to open");
 
-        // Build the list
-        var tree = new Tree(list.Title);
+        int viewWindowHeight = AnsiConsole.Console.Profile.Height - 2;
+        int start = Math.Max(0, selectedIndex - viewWindowHeight + 2);
+        int end = start + viewWindowHeight - 1;
+
+        List<IRenderable> tree = [];
 
         int index = 0;
-        foreach (var item in list.Items)
+        foreach (var item in list!.Items)
         {
-            var node = tree.AddNode(CreateToDoItemLine(item, index == selectedIndex));
-            foreach (var child in item.SubItems)
+            // Main item
+            if (index >= start && index < end)
+                tree.Add(CreateToDoItemLine(item, selectedIndex == index));
+
+            // Subtree
+            List<IRenderable> subtree = [];
+            foreach (var subItems in item.SubItems)
             {
                 index++;
-                node.AddNode(CreateToDoItemLine(child, index == selectedIndex));
+                if (index >= start && index < end)
+                    subtree.Add(
+                        new Padder(
+                            CreateToDoItemLine(subItems, selectedIndex == index),
+                            new Padding(2, 0)
+                    ));
             }
+
+            if (subtree.Count > 0)
+                tree.Add(new Rows(subtree));
             index++;
         }
 
-        Panel panel = new Panel(tree);
+        if (viewWindowHeight < totalDisplayItems && selectedIndex < totalDisplayItems - 1)
+            return new Panel(new Rows(new Rows(tree), new Markup("...")));
 
-        return panel;
+        return new Panel(new Rows(tree));
     }
 
-    private Markup CreateToDoItemLine(ToDoItem item, bool selected)
+    private static Markup CreateToDoItemLine(ToDoItem item, bool selected)
     {
         return new Markup($"{(item.Completed ? ":check_mark_button:" : ":green_square:")} [{(selected ? "blue" : "yellow")}]{item.Title}[/]");
     }
 
-    public Actions GetMenuAction(int choice) => choice switch
+    public static Actions GetMenuAction(int choice) => choice switch
     {
         0 => Actions.OpenListYesterday,
         1 => Actions.OpenListToday,
