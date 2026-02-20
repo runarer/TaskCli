@@ -46,7 +46,7 @@ public class MainController
                     int numberOfTodoItemsInList = CountListItems(_currentList);
 
                     // Render
-                    _consoleView.Render(ctx, _currentList, selectedPanel, selectedItem);
+                    _consoleView.Render(ctx, _currentList, selectedPanel, selectedItem, numberOfTodoItemsInList);
                     ctx.Refresh();
 
                     // Wait for input
@@ -277,7 +277,7 @@ public class MainController
         throw new NotImplementedException("DeleteTask not implemented yet");
     }
 
-    public static int CountListItems(ToDoList? list)
+    private static int CountListItems(ToDoList? list)
     {
         if (list is null)
             return 0;

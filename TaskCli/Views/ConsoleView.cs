@@ -28,14 +28,14 @@ public class ConsoleView
 
     }
 
-    public void Render(LiveDisplayContext ctx, ToDoList? toDoList, Panels selectedPanel, int selectedItem)
+    public void Render(LiveDisplayContext ctx, ToDoList? toDoList, Panels selectedPanel, int selectedItem, int numberOfTodoItems)
     {
 
         Layout["Menu"].Update(CreateMenu(selectedPanel == Panels.Menu ? selectedItem : -1));
 
         // Create ToDolist
 
-        Layout["ToDoList"].Update(CreateToDoListPanel(toDoList, selectedPanel == Panels.ToDoList ? selectedItem : -1).BorderColor(Color.Green).Expand());
+        Layout["ToDoList"].Update(CreateToDoListPanel(toDoList, selectedPanel == Panels.ToDoList ? selectedItem : -1, numberOfTodoItems).BorderColor(Color.Green).Expand());
 
         // Create Info panel
         Layout["Info"].Update(new Panel("1/4 width").BorderColor(Color.Yellow).Expand());
@@ -72,10 +72,8 @@ public class ConsoleView
         return item;
     }
 
-    private Panel CreateToDoListPanel(ToDoList? list, int selectedIndex)
+    private Panel CreateToDoListPanel(ToDoList? list, int selectedIndex, int totalDisplayItems)
     {
-        int totalDisplayItems = MainController.CountListItems(list);
-
         if (totalDisplayItems == 0)
             return new Panel("Select a list to open");
 
