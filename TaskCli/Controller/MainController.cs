@@ -2,6 +2,7 @@ using System.Text;
 using Spectre.Console;
 using TaskCli.Model;
 using TaskCli.Views;
+using TaskCli.Services;
 
 namespace TaskCli.Controller;
 
@@ -10,11 +11,11 @@ public class MainController
     // Need to take model and view objects.
     private ToDoList? _currentList = null;
     private ConsoleView _consoleView;
-    private ToDoLists _model;
+    private ToDoListService _model;
 
     private string[] _lists = [];
 
-    public MainController(ToDoLists model, ConsoleView consoleView)
+    public MainController(ToDoListService model, ConsoleView consoleView)
     {
         _model = model;
         _consoleView = consoleView;

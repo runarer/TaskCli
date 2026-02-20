@@ -1,10 +1,12 @@
-namespace TaskCli.Model;
+using TaskCli.Model;
 
-public class ToDoLists
+namespace TaskCli.Services;
+
+public class ToDoListService
 {
     private IToDoListsStorage _storage;
 
-    private ToDoLists(IToDoListsStorage storage)
+    private ToDoListService(IToDoListsStorage storage)
     {
         _storage = storage;
     }
@@ -21,9 +23,9 @@ public class ToDoLists
     /// <param name="defaultList">A list to be included on construction</param>
     /// <returns>An object of ToDoLists populated with lists, the lists are empty except for defaultList</returns>
     /// <exception cref="InvalidOperationException">defaultList was not found in lists</exception>
-    public static async Task<ToDoLists> CreateAsync(IToDoListsStorage storage, string? defaultList = null)
+    public static async Task<ToDoListService> CreateAsync(IToDoListsStorage storage, string? defaultList = null)
     {
-        var todoLists = new ToDoLists(storage);
+        var todoLists = new ToDoListService(storage);
 
         return todoLists;
     }

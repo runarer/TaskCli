@@ -7,6 +7,7 @@ using Spectre.Console.Rendering;
 using TaskCli.Controller;
 using TaskCli.Model;
 using TaskCli.Views;
+using TaskCli.Services;
 
 namespace TaskCli;
 
@@ -20,7 +21,7 @@ public class TaskCli
         Console.CancelKeyPress += (_, e) => { e.Cancel = true; cancellationToken.Cancel(); };
 
         IToDoListsStorage todoStorage = new Services.GoogleTaskToModel("client_secret.json");
-        ToDoLists toDoLists = await ToDoLists.CreateAsync(todoStorage);
+        ToDoListService toDoLists = await ToDoListService.CreateAsync(todoStorage);
 
         ConsoleView consoleView = new();
 
