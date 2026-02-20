@@ -38,7 +38,7 @@ public class ConsoleView
         Layout["ToDoList"].Update(CreateToDoListPanel(toDoList, selectedPanel == Panels.ToDoList ? selectedItem : -1, numberOfTodoItems).BorderColor(Color.Green).Expand());
 
         // Create Info panel
-        Layout["Info"].Update(new Panel("1/4 width").BorderColor(Color.Yellow).Expand());
+        Layout["Info"].Update(CreateNotePanel(selectedItem).BorderColor(Color.Yellow).Expand());
     }
 
 
@@ -112,6 +112,11 @@ public class ConsoleView
             return new Panel(new Rows(new Rows(tree), new Markup("...")));
 
         return new Panel(new Rows(tree));
+    }
+
+    private Panel CreateNotePanel(int item)
+    {
+        return new Panel(new Markup("From the new method"));
     }
 
     private static Markup CreateToDoItemLine(ToDoItem item, bool selected)
