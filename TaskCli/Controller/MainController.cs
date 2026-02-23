@@ -194,23 +194,6 @@ public class MainController
         }
     }
 
-    private int CountToDoItems()
-    {
-        if (_currentList is null)
-            return 0;
-
-        int items = 0;
-
-        foreach (var item in _currentList.Items)
-        {
-            foreach (var child in item.SubItems)
-                items++;
-            items++;
-        }
-        return items;
-    }
-
-
     private void SetRenderList()
     {
         if (_currentList is null)
