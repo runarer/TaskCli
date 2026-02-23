@@ -13,6 +13,8 @@ public class MainController
     private ConsoleView _consoleView;
     private ToDoListService _model;
 
+    private List<RenderListItem>? _currentRenderList = null;
+
     private string[] _lists = [];
 
     public MainController(ToDoListService model, ConsoleView consoleView)
@@ -40,13 +42,15 @@ public class MainController
             {
                 bool runLiveDisplay = true;
 
+                SetRenderList();
 
                 while (runLiveDisplay)
                 {
                     int numberOfTodoItemsInList = CountListItems(_currentList);
 
                     // Render
-                    _consoleView.Render(ctx, _currentList, selectedPanel, selectedIndex, numberOfTodoItemsInList);
+                    // _consoleView.Render(ctx, _currentList, selectedPanel, selectedIndex, numberOfTodoItemsInList);
+                    _consoleView.Render(selectedPanel, selectedIndex, _currentList?.Title ?? string.Empty, _currentRenderList, selectedIndex);
                     ctx.Refresh();
 
                     // Wait for input
@@ -207,6 +211,27 @@ public class MainController
     }
 
 
+    private void SetRenderList()
+    {
+        if (_currentList is null)
+        {
+            _currentRenderList = null;
+            return;
+        }
+
+        _currentRenderList = [];
+
+        void fillInList(List<ToDoItem> list, int indent = 0)
+        {
+            foreach (var item in list)
+            {
+                _currentRenderList.Add(new RenderListItem(item, indent));
+                if (item.SubItems.Count > 0)
+                    fillInList(item.SubItems, indent + 1);
+            }
+        }
+        fillInList(_currentList.Items);
+    }
 
 
     //May not need to be nullable, can return string.Empty

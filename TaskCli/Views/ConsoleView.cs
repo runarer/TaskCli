@@ -28,19 +28,47 @@ public class ConsoleView
 
     }
 
-    public void Render(LiveDisplayContext ctx, ToDoList? toDoList, Panels selectedPanel, int selectedItem, int numberOfTodoItems)
+    public void Render(Panels selectedPanel, int menuIndex, string listName, List<RenderListItem>? renderList, int listIndex)
     {
+        Layout["Menu"].Update(CreateMenu(selectedPanel == Panels.Menu ? menuIndex : -1));
 
-        Layout["Menu"].Update(CreateMenu(selectedPanel == Panels.Menu ? selectedItem : -1));
+        Layout["ToDoList"].Update(CreateToDoListPanel(listName, renderList, listIndex).BorderColor(Color.Green).Expand());
 
-        // Create ToDolist
-
-        Layout["ToDoList"].Update(CreateToDoListPanel(toDoList, selectedPanel == Panels.ToDoList ? selectedItem : -1, numberOfTodoItems).BorderColor(Color.Green).Expand());
-
-        // Create Info panel
-        Layout["Info"].Update(CreateNotePanel().BorderColor(Color.Yellow).Expand());
+        Layout["Info"].Update(CreateNotePanel(renderList?[listIndex].Item).BorderColor(Color.Yellow).Expand());
     }
 
+    private Panel CreateNotePanel(ToDoItem? item)
+    {
+        return new Panel(new Markup("From the new method"));
+    }
+
+    private Panel CreateToDoListPanel(string listName, List<RenderListItem>? renderList, int listIndex)
+    {
+        if (renderList is null)
+            return new Panel("Select a list to open");
+
+        int viewWindowHeight = AnsiConsole.Console.Profile.Height - 2;
+        int start = Math.Max(0, listIndex - viewWindowHeight + 2);
+        int end = start + viewWindowHeight - 1;
+
+        List<IRenderable> tree = [];
+
+        int index = 0;
+        foreach (var item in renderList)
+        {
+            if (index >= start && index < end)
+                tree.Add(new Padder(
+                        CreateToDoItemLine(item.Item, listIndex == index),
+                        new Padding(2 * item.Indent, 0)
+                ));
+            index++;
+        }
+
+        if (viewWindowHeight < renderList.Count && listIndex < renderList.Count - 1)
+            return new Panel(new Rows(new Rows(tree), new Markup("..."))).Header(listName);
+
+        return new Panel(new Rows(tree)).Header(listName);
+    }
 
     private Rows CreateMenu(int selected)
     {
@@ -70,48 +98,6 @@ public class ConsoleView
         );
 
         return item;
-    }
-
-    private Panel CreateToDoListPanel(ToDoList? list, int selectedIndex, int totalDisplayItems)
-    {
-        if (totalDisplayItems == 0)
-            return new Panel("Select a list to open");
-
-        int viewWindowHeight = AnsiConsole.Console.Profile.Height - 2;
-        int start = Math.Max(0, selectedIndex - viewWindowHeight + 2);
-        int end = start + viewWindowHeight - 1;
-
-        List<IRenderable> tree = [];
-
-        int index = 0;
-        foreach (var item in list!.Items)
-        {
-            // Main item
-            if (index >= start && index < end)
-                tree.Add(CreateToDoItemLine(item, selectedIndex == index));
-
-            // Subtree
-            List<IRenderable> subtree = [];
-            foreach (var subItems in item.SubItems)
-            {
-                index++;
-                if (index >= start && index < end)
-                    subtree.Add(
-                        new Padder(
-                            CreateToDoItemLine(subItems, selectedIndex == index),
-                            new Padding(2, 0)
-                    ));
-            }
-
-            if (subtree.Count > 0)
-                tree.Add(new Rows(subtree));
-            index++;
-        }
-
-        if (viewWindowHeight < totalDisplayItems && selectedIndex < totalDisplayItems - 1)
-            return new Panel(new Rows(new Rows(tree), new Markup("...")));
-
-        return new Panel(new Rows(tree));
     }
 
     private Panel CreateNotePanel()
