@@ -100,12 +100,6 @@ public class ConsoleView
         return item;
     }
 
-    private Panel CreateNotePanel()
-    {
-
-        return new Panel(new Markup("From the new method"));
-    }
-
     private static Markup CreateToDoItemLine(ToDoItem item, bool selected)
     {
         return new Markup($"{(item.Completed ? ":check_mark_button:" : ":green_square:")} [{(selected ? "blue" : "yellow")}]{item.Title}[/]");
