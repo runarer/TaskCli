@@ -32,7 +32,7 @@ public class ConsoleView
     {
         Layout["Menu"].Update(CreateMenu(selectedPanel == Panels.Menu ? menuIndex : -1));
 
-        Layout["ToDoList"].Update(CreateToDoListPanel(listName, renderList, listIndex).BorderColor(Color.Green).Expand());
+        Layout["ToDoList"].Update(CreateToDoListPanel(listName, renderList, selectedPanel, listIndex).BorderColor(Color.Green).Expand());
 
         Layout["Info"].Update(CreateNotePanel(renderList?[listIndex].Item).BorderColor(Color.Yellow).Expand());
     }
@@ -42,7 +42,7 @@ public class ConsoleView
         return new Panel(new Markup("From the new method"));
     }
 
-    private Panel CreateToDoListPanel(string listName, List<RenderListItem>? renderList, int listIndex)
+    private static Panel CreateToDoListPanel(string listName, List<RenderListItem>? renderList, Panels selectedPanel, int listIndex)
     {
         if (renderList is null)
             return new Panel("Select a list to open");
@@ -58,7 +58,7 @@ public class ConsoleView
         {
             if (index >= start && index < end)
                 tree.Add(new Padder(
-                        CreateToDoItemLine(item.Item, listIndex == index),
+                        CreateToDoItemLine(item.Item, selectedPanel == Panels.ToDoList && listIndex == index),
                         new Padding(2 * item.Indent, 0)
                 ));
             index++;
