@@ -13,7 +13,7 @@ public class MainController
     private ConsoleView _consoleView;
     private ToDoListService _model;
 
-    private List<RenderListItem>? _currentRenderList = null;
+    private List<RenderListItem> _currentRenderList = [];
 
     private string[] _lists = [];
 
@@ -29,7 +29,7 @@ public class MainController
     public async Task RunAsync(CancellationToken token)
     {
         bool runApp = true;
-        int selectedIndex = 1;
+        int selectedMenuIndex = 1;
         Panels selectedPanel = Panels.Menu;
         Actions action = Actions.Quit;
 
@@ -41,6 +41,7 @@ public class MainController
             AnsiConsole.Live(_consoleView.Layout).Start(ctx =>
             {
                 bool runLiveDisplay = true;
+                int selectedListIndex = 0;
 
                 SetRenderList();
 
@@ -50,7 +51,7 @@ public class MainController
 
                     // Render
                     // _consoleView.Render(ctx, _currentList, selectedPanel, selectedIndex, numberOfTodoItemsInList);
-                    _consoleView.Render(selectedPanel, selectedIndex, _currentList?.Title ?? string.Empty, _currentRenderList, selectedIndex);
+                    _consoleView.Render(selectedPanel, selectedMenuIndex, _currentList?.Title ?? string.Empty, _currentRenderList, selectedListIndex);
                     ctx.Refresh();
 
                     // Wait for input
@@ -61,26 +62,25 @@ public class MainController
                     {
                         case ConsoleKey.UpArrow:
                             if (selectedPanel == Panels.Menu)
-                                selectedIndex = Math.Max(0, selectedIndex - 1);
+                                selectedMenuIndex = Math.Max(0, selectedMenuIndex - 1);
                             else if (selectedPanel == Panels.ToDoList)
                             {
-                                selectedIndex = Math.Max(0, selectedIndex - 1);
+                                selectedListIndex = Math.Max(0, selectedListIndex - 1);
 
                             }
                             break;
                         case ConsoleKey.DownArrow:
                             if (selectedPanel == Panels.Menu)
-                                selectedIndex = Math.Min(_consoleView.MenuItems.Length - 1, selectedIndex + 1);
+                                selectedMenuIndex = Math.Min(_consoleView.MenuItems.Length - 1, selectedMenuIndex + 1);
                             else if (selectedPanel == Panels.ToDoList)
                             {
-                                selectedIndex = Math.Min(numberOfTodoItemsInList - 1, selectedIndex + 1);
+                                selectedListIndex = Math.Min(numberOfTodoItemsInList - 1, selectedListIndex + 1);
                             }
                             break;
                         case ConsoleKey.LeftArrow:
                             if (selectedPanel == Panels.ToDoList)
                             {
                                 selectedPanel = Panels.Menu;
-                                selectedIndex = Math.Min(selectedIndex, _consoleView.MenuItems.Length - 1);
                             }
 
                             break;
@@ -88,7 +88,6 @@ public class MainController
                             if (numberOfTodoItemsInList > 0 && selectedPanel == Panels.Menu)
                             {
                                 selectedPanel = Panels.ToDoList;
-                                selectedIndex = Math.Min(selectedIndex, numberOfTodoItemsInList - 1);
                             }
                             break;
                         case ConsoleKey.Enter: //If menu then select action, if ToDoList then expand/collapse subtasks
@@ -96,7 +95,7 @@ public class MainController
                             // a lookup into layout->menuitems
                             if (selectedPanel == Panels.Menu)
                             {
-                                action = ConsoleView.GetMenuAction(selectedIndex);
+                                action = ConsoleView.GetMenuAction(selectedMenuIndex);
                                 runLiveDisplay = false;
                                 break;
                             }
@@ -196,13 +195,9 @@ public class MainController
 
     private void SetRenderList()
     {
-        if (_currentList is null)
-        {
-            _currentRenderList = null;
-            return;
-        }
-
         _currentRenderList = [];
+        if (_currentList is null)
+            return;
 
         void fillInList(List<ToDoItem> list, int indent = 0)
         {
@@ -213,7 +208,10 @@ public class MainController
                     fillInList(item.SubItems, indent + 1);
             }
         }
-        fillInList(_currentList.Items);
+
+        // Loop over the list, but only if there is something to loop over
+        if (_currentList.Items.Count > 0)
+            fillInList(_currentList.Items);
     }
 
 

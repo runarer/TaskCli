@@ -51,8 +51,10 @@ public class GoogleTaskToModel : IToDoListsStorage
         tasksRequest.ShowCompleted = true;
         tasksRequest.ShowHidden = true;
         tasksRequest.MaxResults = 100;
+        // tasksRequest.DueMin = DateTime.Now.AddYears(-1).ToString("O");
+        // tasksRequest.DueMax = DateTimeOffset.Now.AddYears(5).ToString("O");
 
-        Tasks tasks = tasksRequest.Execute();
+        Tasks tasks = tasksRequest.Execute(); // Should this be async and use await?
 
         // Get Main tasks, need to store Id and Parent so we can match them later.
         var tempItems = tasks.Items.Select(item => new

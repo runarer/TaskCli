@@ -11,6 +11,9 @@ public class ConsoleView
     public string[] MenuItems { get; } = ["Yesterday", "Today", "Tommorrow", "Select List", "Add List", "Rename List", "Delete List"];
     public Layout Layout { get; private set; } = new Layout();
     private ConsoleViewOptions _options;
+    private static readonly string _statusCompleted = ":check_mark_button:";
+    private static readonly string _statusNotCompleted = ":green_square:";
+    private static readonly string _statusOverdue = ":alarm_clock:";
 
     public ConsoleView(ConsoleViewOptions? options = null)
     {
@@ -28,18 +31,40 @@ public class ConsoleView
 
     }
 
-    public void Render(Panels selectedPanel, int menuIndex, string listName, List<RenderListItem>? renderList, int listIndex)
+    public void Render(Panels selectedPanel, int menuIndex, string listName, List<RenderListItem> renderList, int listIndex)
     {
         Layout["Menu"].Update(CreateMenu(selectedPanel == Panels.Menu ? menuIndex : -1));
 
         Layout["ToDoList"].Update(CreateToDoListPanel(listName, renderList, selectedPanel, listIndex).BorderColor(Color.Green).Expand());
 
-        Layout["Info"].Update(CreateNotePanel(renderList?[listIndex].Item).BorderColor(Color.Yellow).Expand());
+        Layout["Info"].Update(CreateNotePanel(renderList, listIndex).BorderColor(Color.Yellow).Expand());
     }
 
-    private Panel CreateNotePanel(ToDoItem? item)
+    private Rows CreateNotePanelFill(ToDoItem item)
     {
-        return new Panel(new Markup("From the new method"));
+        string status = item.Completed ? _statusCompleted : _statusNotCompleted;
+
+        if (item.Due is not null && item.Due < DateTime.Now)
+            status = _statusOverdue;
+
+        var topColumns = new Columns(new Markup($"{status} {item.Due?.Date.ToShortDateString()}"));
+
+        // Add note
+
+        // Add URLs
+
+        // Add last edited
+
+        // TODO: Fix parsing of google object, due is null when it got a due date!
+
+        return new Rows(topColumns, new Markup($"{item.Title}"), new Rule());
+    }
+    private Panel CreateNotePanel(List<RenderListItem> renderList, int itemIndex)
+    {
+        if (renderList.Count <= 0)
+            return new Panel(new Markup(string.Empty));
+
+        return new Panel(CreateNotePanelFill(renderList[itemIndex].Item));
     }
 
     private static Panel CreateToDoListPanel(string listName, List<RenderListItem>? renderList, Panels selectedPanel, int listIndex)
@@ -102,7 +127,7 @@ public class ConsoleView
 
     private static Markup CreateToDoItemLine(ToDoItem item, bool selected)
     {
-        return new Markup($"{(item.Completed ? ":check_mark_button:" : ":green_square:")} [{(selected ? "blue" : "yellow")}]{item.Title}[/]");
+        return new Markup($"{(item.Completed ? _statusCompleted : _statusNotCompleted)} [{(selected ? "blue" : "yellow")}]{item.Title}[/]");
     }
 
     public static Actions GetMenuAction(int choice) => choice switch
